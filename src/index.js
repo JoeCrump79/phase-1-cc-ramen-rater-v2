@@ -1,4 +1,6 @@
+
 const ramenMenu = {};
+
 
 const selectRamen = (ramen) => { 
   const detailImage = document.getElementsByClassName('detail-image')[0];
@@ -17,7 +19,10 @@ const selectRamen = (ramen) => {
   editRating.value = ramen.rating; 
   editComment.value = ramen.comment; 
 
+  
   document.getElementById('edit-ramen').dataset.id = ramen.id;
+
+  
   ramenMenu[ramen.id] = ramen;
 };
 
@@ -29,6 +34,7 @@ const addRamen = (ramen) => {
   img.alt = ramen.name;
   ramenMenuDiv.appendChild(img);
 
+ 
   ramenMenu[ramen.id] = ramen;
 
   img.addEventListener('click', () => {
@@ -36,10 +42,13 @@ const addRamen = (ramen) => {
   });
 };
 
-const addClickListener = () => {
-  const createButton = document.getElementById('submit-button');
 
-  createButton.addEventListener('click', () => {
+const addSubmitListener = () => {
+  const ramenForm = document.getElementById('new-ramen');
+
+  ramenForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
     const ramen = {
       name: document.getElementById('new-name').value,
       restaurant: document.getElementById('new-restaurant').value,
@@ -58,22 +67,22 @@ const addClickListener = () => {
     .then(response => response.json())
     .then(newRamen => {
       addRamen(newRamen);
-      if (Object.keys(ramenMenu).length === 1) {
+  
         selectRamen(newRamen); 
-      }
+    
     });
 
-    document.getElementById('new-ramen').reset();
+    ramenForm.reset();
   });
 };
 
-const addEditListener = () => {
-  const editButton = document.querySelector('#edit-ramen input[type="submit"]');
 
-  editButton.addEventListener('click', (event) => {
+const addEditListener = () => {
+  const editForm = document.getElementById('edit-ramen');
+
+  editForm.addEventListener('submit', (event) => {
     event.preventDefault();
-    
-    const editForm = document.getElementById('edit-ramen');
+
     const ramenId = editForm.dataset.id;
     const updatedData = {
       rating: document.getElementById('edit-rating').value,
@@ -89,11 +98,15 @@ const addEditListener = () => {
     })
     .then(response => response.json())
     .then(updatedRamen => {
+     
       ramenMenu[ramenId] = { ...ramenMenu[ramenId], ...updatedData };
+      
+      
       selectRamen(ramenMenu[ramenId]);
     });
   });
 };
+
 
 const addDeleteListener = () => {
   const deleteButton = document.getElementById('delete-ramen');
@@ -117,13 +130,12 @@ const addDeleteListener = () => {
 
       delete ramenMenu[ramenId]; 
 
-      const ramenIds = Object.keys(ramenMenu);
-      if (ramenIds.length > 0) {
-        selectRamen(ramenMenu[ramenIds[0]]);
-      }
+      const ramenIds = Object.keys(ramenMenu)
+      selectRamen(ramenMenu[ramenIds[0]])
     });
   });
 };
+
 
 const displayRamens = () => {
   fetch('http://localhost:3000/ramens')
@@ -137,11 +149,14 @@ const displayRamens = () => {
     });
 };
 
+
 const main = () => {
   displayRamens();
-  addClickListener();
+  addSubmitListener();
   addEditListener();
   addDeleteListener();
 };
 
 window.addEventListener('load', main);
+
+
