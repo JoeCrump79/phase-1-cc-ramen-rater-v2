@@ -1,6 +1,4 @@
-
 const ramenMenu = {};
-
 
 const selectRamen = (ramen) => { 
   const detailImage = document.getElementsByClassName('detail-image')[0];
@@ -19,10 +17,7 @@ const selectRamen = (ramen) => {
   editRating.value = ramen.rating; 
   editComment.value = ramen.comment; 
 
-  
   document.getElementById('edit-ramen').dataset.id = ramen.id;
-
-  
   ramenMenu[ramen.id] = ramen;
 };
 
@@ -34,7 +29,6 @@ const addRamen = (ramen) => {
   img.alt = ramen.name;
   ramenMenuDiv.appendChild(img);
 
- 
   ramenMenu[ramen.id] = ramen;
 
   img.addEventListener('click', () => {
@@ -42,13 +36,10 @@ const addRamen = (ramen) => {
   });
 };
 
+const addClickListener = () => {
+  const createButton = document.getElementById('submit-button');
 
-const addSubmitListener = () => {
-  const ramenForm = document.getElementById('new-ramen');
-
-  ramenForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-
+  createButton.addEventListener('click', () => {
     const ramen = {
       name: document.getElementById('new-name').value,
       restaurant: document.getElementById('new-restaurant').value,
@@ -72,17 +63,17 @@ const addSubmitListener = () => {
       }
     });
 
-    ramenForm.reset();
+    document.getElementById('new-ramen').reset();
   });
 };
 
-
 const addEditListener = () => {
-  const editForm = document.getElementById('edit-ramen');
+  const editButton = document.querySelector('#edit-ramen input[type="submit"]');
 
-  editForm.addEventListener('submit', (event) => {
+  editButton.addEventListener('click', (event) => {
     event.preventDefault();
-
+    
+    const editForm = document.getElementById('edit-ramen');
     const ramenId = editForm.dataset.id;
     const updatedData = {
       rating: document.getElementById('edit-rating').value,
@@ -98,15 +89,11 @@ const addEditListener = () => {
     })
     .then(response => response.json())
     .then(updatedRamen => {
-     
       ramenMenu[ramenId] = { ...ramenMenu[ramenId], ...updatedData };
-      
-      
       selectRamen(ramenMenu[ramenId]);
     });
   });
 };
-
 
 const addDeleteListener = () => {
   const deleteButton = document.getElementById('delete-ramen');
@@ -130,12 +117,13 @@ const addDeleteListener = () => {
 
       delete ramenMenu[ramenId]; 
 
-      const ramenIds = Object.keys(ramenMenu)
-      selectRamen(ramenMenu[ramenIds[0]])
+      const ramenIds = Object.keys(ramenMenu);
+      if (ramenIds.length > 0) {
+        selectRamen(ramenMenu[ramenIds[0]]);
+      }
     });
   });
 };
-
 
 const displayRamens = () => {
   fetch('http://localhost:3000/ramens')
@@ -149,14 +137,11 @@ const displayRamens = () => {
     });
 };
 
-
 const main = () => {
   displayRamens();
-  addSubmitListener();
+  addClickListener();
   addEditListener();
   addDeleteListener();
 };
 
 window.addEventListener('load', main);
-
-
